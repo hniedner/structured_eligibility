@@ -7,6 +7,11 @@ setup(
     install_requires=[
         'ruamel.yaml',
         'json-logic'
-        'flask'
+        'flask',
+        'Flask-Bootstrap',
+        'Flask-WTF',
+        'Flask-Bower',
+        'Flask-WTF',
+        'requests'
     ],
 )
