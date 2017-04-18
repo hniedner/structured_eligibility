@@ -1,0 +1,23 @@
+body {
+    padding-top: 65px;
+}
+
+@media (min-width: 767px) {
+    .affix, .affix-top {
+        position: fixed;
+    }
+}
+
+/* form element styling */
+.red {
+    color: red;
+}
+
+.form-area {
+    background-color: #F2F2F2;
+    padding: 10px 40px 60px;
+    margin: 0 0 60px;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+;
+}
