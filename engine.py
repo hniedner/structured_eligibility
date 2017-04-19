@@ -93,22 +93,27 @@ class RulesEditor:
     """ Authoring tool for inclusion or exclusion criteria in the form of logic rules """
 
     @staticmethod
-    def define_min_numeric_value(var_name: str, numeric_value: [int, float], label=None) -> Rule:
+    def define_min_numeric_value(var_name: str, numeric_value: [int, float], label=None,
+                                 typematch_required: bool = False) -> Rule:
         if not label:
-            label = var_name + ' >= ' + str(numeric_value)
-        return Rule({'>=': [{'var': var_name}, numeric_value]}, label)
+            predicate = '>==' if typematch_required else '>='
+            label = ' '.join([var_name, predicate, str(numeric_value)])
+        return Rule({predicate: [{'var': var_name}, numeric_value]}, label)
 
     @staticmethod
-    def define_max_numeric_value(var_name: str, numeric_value: [int, float], label=None) -> Rule:
+    def define_max_numeric_value(var_name: str, numeric_value: [int, float], label=None,
+                                 typematch_required: bool = False) -> Rule:
         if not label:
-            label = var_name + ' <= ' + str(numeric_value)
-        return Rule({'<=': [{'var': var_name}, numeric_value]}, label)
+            predicate = '<==' if typematch_required else '<='
+            label = ' '.join([var_name, predicate, str(numeric_value)])
+        return Rule({predicate: [{'var': var_name}, numeric_value]}, label)
 
     @staticmethod
-    def define_value_exact_match(var_name: str, value, label=None) -> Rule:
+    def define_value_exact_match(var_name: str, value, label: str = None, typematch_required: bool = False) -> Rule:
         if not label:
-            label = var_name + ' == ' + value
-            return Rule({'==': [{'var': var_name}, value]}, label)
+            predicate = '===' if typematch_required else '=='
+            label = ' '.join([var_name, predicate, str(value)])
+            return Rule({predicate: [{'var': var_name}, value]}, label)
 
     @staticmethod
     def define_value_contained_in_collection(var_name: str, collection: list, label=None) -> Rule:

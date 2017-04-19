@@ -17,13 +17,13 @@ class TestingConfig(BaseConfig):
 
 
 config = {
-    "development": "structured_eligibility.config.DevelopmentConfig",
-    "testing": "structured_eligibility.config.TestingConfig",
-    "default": "structured_eligibility.config.BaseConfig"
+    "DEV": "structured_eligibility.config.DevelopmentConfig",
+    "TEST": "structured_eligibility.config.TestingConfig",
+    "DEFAULT": "structured_eligibility.config.BaseConfig"
 }
 
 
 def configure_app(app):
-    config_name = os.getenv('FLASK_CONFIGURATION', 'default')
+    config_name = os.getenv('FLASK_CONFIGURATION', 'DEFAULT')
     app.config.from_object(config[config_name])
     app.config.from_pyfile('config.cfg', silent=True)
