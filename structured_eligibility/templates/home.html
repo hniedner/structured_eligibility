@@ -14,31 +14,48 @@
                 <div class="form-area">
                     <form role="form">
                         <br style="clear:both">
-                        <h3 style="margin-bottom: 25px; text-align: center;">Contact Form</h3>
+                        <h3 style="margin-bottom: 25px; text-align: center;">Create an eligibility criterion (Rule)</h3>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                            <label for="description">Rule Description - Human readable description of the rule</label>
+                            <textarea class="form-control" id="description" name="description" placeholder="Description"
+                                      maxlength="255" rows="10" required></textarea>
+                            <span class="help-block">
+                                <span id="characterLeft" class="help-block ">255 characters left</span>
+                            </span>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Email"
+                            <label for="name">Rule Name - Short label that identifies the rule in a listing</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Rule Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="type">Rule Type - Select the type of constraint imposed on the variable
+                                (parameter) below</label>
+                            <select class="form-control" id="type" name="type" required>
+                                <option value="equal" label="Variable must match the value!"></option>
+                                <option value="type_equal" label="Variable must match type and value!"></option>
+                                <option value="min" label="Variable must be equal or greater than the value!"></option>
+                                <option value="type_min" label="Variable must match the type and be equal or
+                                                                greater than the value!"></option>
+                                <option value="max" label="Variable must be equal or smaller than the value!"></option>
+                                <option value="type_max" label="Variable must match the type and be equal or
+                                                                smaller than the value!"></option>
+                                <option value="equal" label="Variable must be within the value set!"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="var_name">Variable Name - Name of the data element from the patient/subject data
+                                set</label>
+                            <input type="text" class="form-control" id="var_name" name="var_name"
+                                   placeholder="Variable Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="value">Value - Constraint imposed on the variable according to the selected
+                                rule</label>
+                            <input type="text" class="form-control" id="value" name="value"
+                                   placeholder="Value"
                                    required>
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="mobile" name="mobile"
-                                   placeholder="Mobile Number"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject"
-                                   required>
-                        </div>
-                        <div class="form-group">
-                        <textarea class="form-control" id="message" placeholder="Message"
-                                  maxlength="140" rows="7"></textarea>
-                            <span class="help-block"><span id="characterLeft"
-                                                           class="help-block ">You have reached the limit</span></span>
-                        </div>
-
-                        <button type="button" id="submit" name="submit" class="btn btn-primary pull-right">Submit Form
+                        <button type="button" id="submit" name="submit" class="btn btn-primary pull-right">Create Rule
                         </button>
                     </form>
                 </div>
@@ -47,7 +64,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            Features
+                            Info
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -68,11 +85,12 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
     <script>
         $(document).ready(function () {
-            $('#characterLeft').text('140 characters left');
-            $('#message').keydown(function () {
-                var max = 140;
+            $('#characterLeft').text('255 characters left');
+            $('#description').keydown(function () {
+                var max = 255;
                 var len = $(this).val().length;
                 if (len >= max) {
                     $('#characterLeft').text('You have reached the limit');
