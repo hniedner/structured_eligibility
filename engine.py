@@ -8,9 +8,10 @@ from json_logic import jsonLogic
 class Rule:
     """ Encapsulate a rule or criterion """
 
-    def __init__(self, definition: dict, label: str, uid: str = None):
+    def __init__(self, definition: dict, description: str, name: str, uid: str = None):
         self._definition = definition
-        self._label = label
+        self._description = description
+        self._name = name
         self._id = uuid.uuid4().hex if uid is None else uid
 
     @property
@@ -22,30 +23,34 @@ class Rule:
         return self._definition
 
     @property
-    def label(self) -> str:
-        return self._label
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def description(self) -> str:
+        return self._description
 
     def __repr__(self):
-        return {**self._definition, **{"id": self._id, "label": self._label}}
+        return {**self._definition, **{"id": self._id, "label": self._name, "description": self._description}}
 
     def __str__(self):
-        return 'Rule (' + self._id + ') ' + self._label + ' -> definition: ' + json.dumps(self._definition)
+        return 'Rule (' + self._id + ') ' + self._name + ' -> definition: ' + json.dumps(self._definition) + '\n' + self._description
 
 
 class RuleSet:
     """ Encapsulate a set of rules and emit them as conjunction of disjunction"""
 
-    def __init__(self, rulez: set, label: str):
+    def __init__(self, rulez: set, name: str):
         self._disjunction_id = None
         self._conjunction_id = None
         self._rules = {}
         for rule in rulez:
             self._rules[rule.id] = rule
-        self._label = label
+        self._name = name
 
     @property
-    def label(self) -> str:
-        return self._label
+    def name(self) -> str:
+        return self._name
 
     @property
     def definitions(self) -> list:
@@ -54,20 +59,24 @@ class RuleSet:
             definitions.append(self._rules[rule_id].__repr__())
         return definitions
 
-    def conjunction(self) -> Rule:
-        if self._conjunction_id is None:
-            rule = Rule({"and": self.definitions}, self.label)
-            self._conjunction_id = rule.id
-        else:
-            rule = Rule({"and": self.definitions}, self.label, self._conjunction_id)
-        return rule
-
-    def disjunction(self) -> Rule:
+    def conjunction(self, rule_description: str, rule_name: str=None) -> Rule:
+        if rule_name is None:
+            rule_name = self.name
         if self._disjunction_id is None:
-            rule = Rule({"or": self.definitions}, self.label)
+            rule = Rule({"and": self.definitions}, rule_description, rule_name)
             self._disjunction_id = rule.id
         else:
-            rule = Rule({"or": self.definitions}, self.label, self._disjunction_id)
+            rule = Rule({"and": self.definitions}, rule_description, rule_name, self._disjunction_id)
+        return rule
+
+    def disjunction(self, rule_description: str, rule_name: str=None) -> Rule:
+        if rule_name is None:
+            rule_name = self.name
+        if self._disjunction_id is None:
+            rule = Rule({"or": self.definitions}, rule_description, rule_name)
+            self._disjunction_id = rule.id
+        else:
+            rule = Rule({"or": self.definitions}, rule_description, rule_name, self._disjunction_id)
         return rule
 
     def add_rule(self, rule: Rule):
@@ -78,12 +87,12 @@ class RuleSet:
 
     def __repr__(self):
         return {
-            "label": self._label,
+            "label": self._name,
             "rules": self._rules
         }
 
     def __str__(self):
-        strval = ['Ruleset (' + self._label + ') -> rules: ']
+        strval = ['Ruleset (' + self._name + ') -> rules: ']
         for rule_id in self._rules:
             strval.append('\t' + str(self._rules[rule_id]))
         return '\n'.join(strval)
@@ -93,33 +102,33 @@ class RulesEditor:
     """ Authoring tool for inclusion or exclusion criteria in the form of logic rules """
 
     @staticmethod
-    def define_min_numeric_value(var_name: str, numeric_value: [int, float], label=None,
+    def define_min_numeric_value(var_name: str, numeric_value: [int, float], description: str, name: str=None,
                                  typematch_required: bool = False) -> Rule:
-        if not label:
+        if not name:
             predicate = '>==' if typematch_required else '>='
-            label = ' '.join([var_name, predicate, str(numeric_value)])
-        return Rule({predicate: [{'var': var_name}, numeric_value]}, label)
+            name = ' '.join([var_name, predicate, str(numeric_value)])
+        return Rule({predicate: [{'var': var_name}, numeric_value]}, description, name)
 
     @staticmethod
-    def define_max_numeric_value(var_name: str, numeric_value: [int, float], label=None,
+    def define_max_numeric_value(var_name: str, numeric_value: [int, float], description: str, name: str=None,
                                  typematch_required: bool = False) -> Rule:
-        if not label:
+        if not name:
             predicate = '<==' if typematch_required else '<='
-            label = ' '.join([var_name, predicate, str(numeric_value)])
-        return Rule({predicate: [{'var': var_name}, numeric_value]}, label)
+            name = ' '.join([var_name, predicate, str(numeric_value)])
+        return Rule({predicate: [{'var': var_name}, numeric_value]}, description, name)
 
     @staticmethod
-    def define_value_exact_match(var_name: str, value, label: str = None, typematch_required: bool = False) -> Rule:
-        if not label:
+    def define_value_exact_match(var_name: str, value, description: str, name: str=None, typematch_required: bool = False) -> Rule:
+        if not name:
             predicate = '===' if typematch_required else '=='
-            label = ' '.join([var_name, predicate, str(value)])
-            return Rule({predicate: [{'var': var_name}, value]}, label)
+            name = ' '.join([var_name, predicate, str(value)])
+            return Rule({predicate: [{'var': var_name}, value]}, description, name)
 
     @staticmethod
-    def define_value_contained_in_collection(var_name: str, collection: list, label=None) -> Rule:
-        if not label:
-            label = var_name + ' in [' + ' ,'.join("'{0}'".format(n) for n in collection) + ']'
-            return Rule({'in': [{'var': var_name}, collection]}, label)
+    def define_value_contained_in_collection(var_name: str, collection: list, description: str, name: str=None) -> Rule:
+        if not name:
+            name = var_name + ' in [' + ' ,'.join("'{0}'".format(n) for n in collection) + ']'
+            return Rule({'in': [{'var': var_name}, collection]}, description, name)
 
     @staticmethod
     def read_rules_json(filename: str):
