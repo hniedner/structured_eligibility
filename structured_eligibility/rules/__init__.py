@@ -31,7 +31,7 @@ class Rule:
         return self._description
 
     def __repr__(self):
-        return {**self._definition, **{"id": self._id, "label": self._name, "description": self._description}}
+        return {**self._definition, **{"id": self._id, "name": self._name, "description": self._description}}
 
     def __str__(self):
         return 'Rule (' + self._id + ') ' + self._name + ' -> definition: ' + json.dumps(
@@ -88,7 +88,7 @@ class RuleSet:
 
     def __repr__(self):
         return {
-            "label": self._name,
+            "name": self._name,
             "rules": self._rules
         }
 
@@ -138,8 +138,8 @@ class RulesEditor:
         fp = open(filename, 'r', encoding='utf-8')
         rulez = json.load(fp)
         rule_id = rulez.pop('id')
-        label = rulez.pop('label')
-        rule = Rule(rulez, label, rule_id)
+        name = rulez.pop('name')
+        rule = Rule(rulez, name, rule_id)
         fp.close()
         return rule
 
@@ -148,8 +148,8 @@ class RulesEditor:
         fp = open(filename, 'r', encoding='utf-8')
         rulez = ruamel.yaml.safe_load(fp.read())
         rule_id = rulez.pop('id')
-        label = rulez.pop('label')
-        rule = Rule(rulez, label, rule_id)
+        name = rulez.pop('name')
+        rule = Rule(rulez, name, rule_id)
         fp.close()
         return rule
 

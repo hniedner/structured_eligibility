@@ -1,4 +1,4 @@
-from engine import RulesEditor, RuleSet
+from structured_eligibility.rules import RulesEditor, RuleSet
 
 patient = {'age_in_years': 44,
            'biological_gender': 'MALE',
@@ -52,11 +52,11 @@ rsa = RuleSet({rs1_conjunction, rs2_disjunction, rs3_conjunction}, 'all rules')
 rsa_conjunction = rsa.conjunction('Combined eligibility criteria.', 'Eligibility Criteria')
 print(rsa_conjunction)
 
-RulesEditor.write_rules_yaml(rsa_conjunction, 'bar.yaml')
-RulesEditor.write_rules_json(rsa_conjunction, 'bar.json')
+RulesEditor.write_rules_yaml(rsa_conjunction, 'example.yaml')
+RulesEditor.write_rules_json(rsa_conjunction, 'example.json')
 
-rule_yaml_recon = RulesEditor.read_rules_yaml('bar.yaml')
-rule_json_recon = RulesEditor.read_rules_json('bar.json')
+rule_yaml_recon = RulesEditor.read_rules_yaml('example.yaml')
+rule_json_recon = RulesEditor.read_rules_json('example.json')
 
 print(RulesEditor.evaluate(rsa_conjunction.definition, patient))
 print(RulesEditor.evaluate(rule_yaml_recon.definition, patient))
