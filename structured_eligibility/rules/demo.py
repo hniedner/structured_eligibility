@@ -65,3 +65,7 @@ print(RulesEditor.evaluate(rule_json_recon.definition, patient))
 print(rsa_conjunction.definition)
 print(rule_yaml_recon.definition)
 print(rule_json_recon.definition)
+
+print(RulesEditor.dump_to_yaml(rsa_conjunction))
+print(RulesEditor.dump_to_json(rsa_conjunction))
+

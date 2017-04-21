@@ -1,5 +1,6 @@
 import json
 import uuid
+import io
 
 import ruamel.yaml
 from json_logic import jsonLogic
@@ -152,6 +153,14 @@ class RulesEditor:
         rule = Rule(rulez, name, rule_id)
         fp.close()
         return rule
+
+    @staticmethod
+    def dump_to_json(rule: Rule) -> str:
+        return json.dumps(rule.__repr__(), indent=2)
+
+    @staticmethod
+    def dump_to_yaml(rule: Rule) -> str:
+        return ruamel.yaml.round_trip_dump(rule.__repr__())
 
     @staticmethod
     def write_rules_json(rule: Rule, filename: str):
