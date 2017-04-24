@@ -31,6 +31,7 @@
                             <label for="type">Rule Type - Select the type of constraint imposed on the variable
                                 (parameter) below</label>
                             <select class="form-control" id="type" name="type" required>
+                                <option value="None" label="Please select a rule type" selected="selected"></option>
                                 <option value="equal" label="Variable must match the value!"></option>
                                 <option value="type_equal" label="Variable must match type and value!"></option>
                                 <option value="min" label="Variable must be equal or greater than the value!"></option>
@@ -39,7 +40,7 @@
                                 <option value="max" label="Variable must be equal or smaller than the value!"></option>
                                 <option value="type_max" label="Variable must match the type and be equal or
                                                                 smaller than the value!"></option>
-                                <option value="equal" label="Variable must be within the value set!"></option>
+                                <option value="in" label="Variable must be within the value set!"></option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -63,20 +64,14 @@
             <div class="col-sm-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <h3 id="info_title" class="panel-title">
                             Info
                         </h3>
                     </div>
                     <div class="panel-body">
-                        <ul>
-                            <li>Very customizable</li>
-                            <li>Works with Bootstrap's native form examples</li>
-                            <li>Uses CSS transitions for fallback browser support</li>
-                            <li>Placeholder override for labels when fields are empty</li>
-                            <li>Included authored jQuery plugin</li>
-                            <li>Optional bottom label positioning with the <code>.label-bottom</code> utility</li>
-                            <li>Works great with Chrome's AutoComplete</li>
-                        </ul>
+                        <p id="info_body">
+
+                        </p>
                     </div>
                 </div>
             </div>
@@ -87,7 +82,24 @@
 {% block scripts %}
     {{ super() }}
     <script>
+
+
+        var help = {
+            'equal': '1',
+            'type_equal': '2',
+            'min': '3',
+            'type_min': '4',
+            'max': '5',
+            'type_max': '6',
+            'in': '7'
+        };
+
         $(document).ready(function () {
+
+            $('#info_title').text($('#type option:selected').attr('label'));
+            $('#info_body').text($('#type').value);
+
+
             $('#characterLeft').text('255 characters left');
             $('#description').keydown(function () {
                 var max = 255;
@@ -105,5 +117,10 @@
                 }
             });
         });
+
+        $('#type').on('change', function() {
+            $('#info_title').text($('#type option:selected').attr('label'));
+            $('#info_body').text(help[this.value])
+        })
     </script>
 {% endblock %}

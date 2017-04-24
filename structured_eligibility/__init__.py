@@ -15,4 +15,5 @@ Bower(app)
 configure_app(app)
 
 # Pulling in the routes
+import structured_eligibility.ajax_callbacks
 import structured_eligibility.views
