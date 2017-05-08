@@ -5,3 +5,4 @@ Flask-Bootstrap==3.3.7.1
 Flask-Bower==1.2.1
 Flask-WTF==0.14.2
 requests==2.13.0
+tinydb==3.2.3

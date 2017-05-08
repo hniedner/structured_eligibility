@@ -12,6 +12,7 @@ setup(
         'Flask-WTF',
         'Flask-Bower',
         'Flask-WTF',
-        'requests'
+        'requests',
+        'tinydb'
     ],
 )
