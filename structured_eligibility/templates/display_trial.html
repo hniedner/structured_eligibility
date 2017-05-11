@@ -1,0 +1,333 @@
+{%- extends "base.html" %}
+
+{% block title %}
+Clinical Trial
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <div>
+            <h4>{{ trial.brief_title }}</h4>
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th scope="row">IDs</th>
+                    <td>
+                        <b>NCI:</b> {{ trial.nci_id }} &nbsp; * &nbsp;
+                        <b>NCT:</b> {{ trial.nct_id }} &nbsp; * &nbsp;
+                        <b>CTEP:</b> {{ trial.ctep_id }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Trial Status</th>
+                    <td>
+                        <b>Start Date:</b> {{ trial.start_date }} ({{ trial.start_date_type_code }}) &nbsp; * &nbsp;
+                        <b>{{ trial.current_trial_status }}</b> (as of {{ trial.current_trial_status_date }})
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Study Type</th>
+                    <td>{{ trial.study_protocol_type }} Trial
+                        {% if trial.study_subtype_code %}
+                        : {{ trial.study_subtype_code }}
+                        {% endif %}
+                        &nbsp; * &nbsp; <b>Phase:</b> {{ trial.phase.phase }}
+                        &nbsp; * &nbsp; <b>Minimum Accrual:</b> {{ trial.minimum_target_accrual_number }}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Principal Investigator</th>
+                    <td>{{ trial.principal_investigator }}
+                        &nbsp; * &nbsp; {{ trial.lead_org }}
+                    </td>
+                </tr>
+                {% if trial.study_population_description %}
+                <tr>
+                    <th scope="row">Target Population</th>
+                    <td>{{ trial.study_population_description }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th scope="row">Anatomic Sites</th>
+                    <td>{% if trial.anatomic_sites %}
+                        {{ ', '.join(trial.anatomic_sites) }}
+                        {% else %}
+                        {{ trial.anatomic_sites }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <b>Official Title</b><br/>
+                        {{ trial.official_title }}
+                    </td>
+                </tr>
+                <tr data-toggle="collapse" data-target="#brief_summary" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Brief Summary +</a>
+                    </th>
+                </tr>
+                <tr id="brief_summary" class="collapse">
+                    <td colspan="2">{{ trial.brief_summary }}</td>
+                </tr>
+                {% if trial.detailed_description %}
+                <tr data-toggle="collapse" data-target="#detailed_description" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Detailed Description +</a>
+                    </th>
+                </tr>
+                <tr id="detailed_description" class="collapse">
+                    <td colspan="2">{ trial.detailed_description }}</td>
+                </tr>
+                {% endif %}
+                <tr data-toggle="collapse" data-target="#sites" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Clinical Trial Sites +</a>
+                    </th>
+                </tr>
+                <tr data-toggle="collapse" data-target="#diseases" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Eligible Diseases +</a>
+                    </th>
+                </tr>
+                <tr id="diseases" class="collapse">
+                    <td colspan="2">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>&nbsp;</th>
+                                <th>Other Names</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for disease in trial.diseases %}
+                            {% if disease.inclusion_indicator == 'TRIAL' %}
+                            <tr>
+                                <th scope="row">{{ disease.preferred_name }}
+                                    <br/><a href="https://ncit.nci.nih.gov/ncitbrowser/pages/concept_details.jsf?dictionary=NCI%20Thesaurus&code={{ disease.nci_thesaurus_concept_id }}">
+                                        {{ disease.nci_thesaurus_concept_id }}</a>
+                                </th>
+                                <td>&nbsp;</td>
+                                <td>{{ ' * '.join(disease.synonyms) }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% if trial.biomarkers %}
+                <tr data-toggle="collapse" data-target="#biomarkers" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Biomarkers Structured +</a>
+                    </th>
+                </tr>
+                <tr id="biomarkers" class="collapse">
+                    <td colspan="2">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Purpose</th>
+                                <th>NCI Thesaurus</th>
+                                <th>Other Names</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for biomarker in trial.biomarkers %}
+                            <tr>
+                                <th scope="row">{{ biomarker.long_name }}</th>
+                                <th>{{ biomarker.assay_purpose }}</th>
+                                <td>{{ biomarker.nci_thesaurus_concept_id }}</td>
+                                <td>{{ ' * '.join(biomarker.synonyms) }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endif %}
+                <tr data-toggle="collapse" data-target="#struct_eligibility" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Eligibility Structured +</a>
+                    </th>
+                </tr>
+                <tr id="struct_eligibility" class="collapse">
+                    <td colspan="2">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Gender</th>
+                                <th>Minimal Age</th>
+                                <th>Maximum Age</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{ trial.eligibility.structured.gender }}</td>
+                                <td>{{ trial.eligibility.structured.min_age }}</td>
+                                <td>{{ trial.eligibility.structured.max_age }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr data-toggle="collapse" data-target="#unstruct_eligibility" class="clickable">
+                    <th colspan="2" scope="row" style="text-align: center;">
+                        <a href="#">+ Eligibility Unstructured +</a>
+                    </th>
+                </tr>
+                <tr id="unstruct_eligibility" class="collapse">
+                    <td colspan="2">
+                        <table class="table table-striped">
+                            {% for criterion in trial.eligibility.unstructured %}
+                            <tr>
+                                <th scope="row">
+                                    {% if criterion.inclusion_indicator %}
+                                    Inclusion: &nbsp;
+                                    {% else %}
+                                    Exclusion: &nbsp;
+                                    {% endif %}
+                                </th>
+                                <td>&nbsp;</td>
+                                {% set td_name = 'criterion_raw_' + loop.index|string %}
+                                <td id="{{ td_name }}">{{ criterion.description }}</td>
+                                <td>&nbsp;<input id="{{ loop.index }}" name="abstract_btn" class="btn btn-primary"
+                                                 type="button"
+                                                 value="Abstract"/></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- The Modal -->
+<div id="abstract_modal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+
+        <div class="form-area">
+            <form role="form">
+                <br style="clear:both">
+                <h3 style="margin-bottom: 25px; text-align: center;">Create an eligibility criterion (Rule)</h3>
+                <div class="form-group">
+                    <label for="description">Rule Description - Human readable description of the rule</label>
+                    <textarea class="form-control" id="description" name="description" placeholder="Description"
+                              maxlength="1000" rows="5" required></textarea>
+                    <span class="help-block">
+                                <span id="characterLeft" class="help-block ">255 characters left</span>
+                            </span>
+                </div>
+                <div class="form-group">
+                    <label for="name">Rule Name - Short label that identifies the rule in a listing</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Rule Name">
+                </div>
+                <div class="form-group">
+                    <label for="type">Rule Type - Select the type of constraint imposed on the variable
+                        (parameter) below</label>
+                    <select class="form-control" id="type" name="type" required>
+                        <option value="None" label="Please select a rule type" selected="selected"></option>
+                        <option value="equal" label="Variable must match the value!"></option>
+                        <option value="type_equal" label="Variable must match type and value!"></option>
+                        <option value="min" label="Variable must be equal or greater than the value!"></option>
+                        <option value="type_min" label="Variable must match the type and be equal or
+                                                                greater than the value!"></option>
+                        <option value="max" label="Variable must be equal or smaller than the value!"></option>
+                        <option value="type_max" label="Variable must match the type and be equal or
+                                                                smaller than the value!"></option>
+                        <option value="in" label="Variable must be within the value set!"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="var_name">Variable Name - Name of the data element from the patient/subject data
+                        set</label>
+                    <input type="text" class="form-control" id="var_name" name="var_name"
+                           placeholder="Variable Name" required>
+                </div>
+                <div class="form-group">
+                    <label for="value">Value - Constraint imposed on the variable according to the selected
+                        rule</label>
+                    <input type="text" class="form-control" id="value" name="value"
+                           placeholder="Value"
+                           required>
+                </div>
+                <button type="button" id="submit" name="submit" class="btn btn-primary pull-right">Create Rule
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{%- endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+
+    $(document).ready(function () {
+
+        $('#info_title').text($('#type option:selected').attr('label'));
+        $('#info_body').text($('#type').value);
+
+
+        $('#characterLeft').text('1000 characters left');
+        $('#description').keydown(function () {
+            var max = 1000;
+            var len = $(this).val().length;
+            if (len >= max) {
+                $('#characterLeft').text('You have reached the limit');
+                $('#characterLeft').addClass('red');
+                $('#btnSubmit').addClass('disabled');
+            }
+            else {
+                var ch = max - len;
+                $('#characterLeft').text(ch + ' characters left');
+                $('#btnSubmit').removeClass('disabled');
+                $('#characterLeft').removeClass('red');
+            }
+        });
+    });
+
+    // Get the modal
+    var modal = document.getElementById('abstract_modal');
+
+    // Get the button that opens the modal
+    var btns = document.getElementsByName("abstract_btn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    // and copy the eligibility criterion text into the rule description textarea
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].onclick = function () {
+            var rule_desc_id = 'criterion_raw_' + this.getAttribute('id');
+            var rule_desc = window.parent.parent.document.getElementById(rule_desc_id).textContent;
+            modal.style.display = "block";
+            var desc_field = document.getElementById('description');
+            desc_field.value = rule_desc;
+            $('#characterLeft').text(1000 - rule_desc.length + ' characters left');
+        }
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
+</script>
+{%- endblock %}
